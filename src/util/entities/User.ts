@@ -25,7 +25,7 @@ import {
 	OneToMany,
 	OneToOne,
 } from "typeorm";
-import { Config, Email, FieldErrors, Snowflake, trimSpecial } from "..";
+import { Config, Device, Email, FieldErrors, Snowflake, trimSpecial } from "..";
 import { BitField } from "../util/BitField";
 import { BaseClass } from "./BaseClass";
 import { ConnectedAccount } from "./ConnectedAccount";
@@ -189,6 +189,9 @@ export class User extends BaseClass {
 
 	@OneToMany(() => Session, (session: Session) => session.user)
 	sessions: Session[];
+
+	@OneToMany(() => Device, (device: Device) => device.user)
+	devices: Device[];
 
 	@JoinColumn({ name: "relationship_ids" })
 	@OneToMany(
