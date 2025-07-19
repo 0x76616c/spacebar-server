@@ -24,7 +24,7 @@ export * from "./CaptchaRequiredResponse";
 export * from "./DiscoverableGuildsResponse";
 export * from "./EmailDomainLookupResponse";
 export * from "./EmailDomainLookupVerifyCodeResponse";
-export * from "./EmojiSourceResponse"
+export * from "./EmojiSourceResponse";
 export * from "./GatewayBotResponse";
 export * from "./GatewayResponse";
 export * from "./GenerateRegistrationTokensResponse";
@@ -47,6 +47,7 @@ export * from "./LocationMetadataResponse";
 export * from "./MemberJoinGuildResponse";
 export * from "./OAuthAuthorizeResponse";
 export * from "./RefreshUrlsResponse";
+export * from "./SessionsResponse";
 export * from "./TeamListResponse";
 export * from "./Tenor";
 export * from "./TokenResponse";
