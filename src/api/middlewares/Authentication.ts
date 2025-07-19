@@ -69,6 +69,7 @@ declare global {
 			user_bot: boolean;
 			token: { id: string; iat: number };
 			rights: Rights;
+			device_id: string | null;
 		}
 	}
 }
@@ -100,11 +101,14 @@ export async function Authentication(
 	Sentry.setUser({ id: req.user_id });
 
 	try {
-		const { decoded, user } = await checkToken(req.headers.authorization);
+		const { decoded, user, device } = await checkToken(
+			req.headers.authorization,
+		);
 
 		req.token = decoded;
 		req.user_id = decoded.id;
 		req.user_bot = user.bot;
+		req.device_id = device;
 		req.rights = new Rights(Number(user.rights));
 		return next();
 	} catch (error) {

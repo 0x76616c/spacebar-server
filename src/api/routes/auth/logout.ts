@@ -17,6 +17,7 @@
 */
 
 import { route } from "@spacebar/api";
+import { Device } from "@spacebar/util";
 import { Request, Response, Router } from "express";
 
 const router: Router = Router();
@@ -41,6 +42,11 @@ router.post(
 			if (Object.keys(req.body).length != 0)
 				console.log(`[LOGOUT]: Extra fields sent in logout!`, req.body);
 		}
+
+		if (req.device_id) {
+			await Device.delete({ id_hash: req.device_id });
+		}
+
 		res.status(204).send();
 	},
 );

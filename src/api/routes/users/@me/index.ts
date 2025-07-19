@@ -19,6 +19,7 @@
 import { route } from "@spacebar/api";
 import {
 	Config,
+	Device,
 	emitEvent,
 	FieldErrors,
 	generateToken,
@@ -137,7 +138,10 @@ router.patch(
 			}
 			user.data.hash = await bcrypt.hash(body.new_password, 12);
 			user.data.valid_tokens_since = new Date();
-			newToken = (await generateToken(user.id)) as string;
+
+			const device = await Device.resetDevices({ req, user });
+
+			newToken = (await generateToken(device)) as string;
 		}
 
 		if (body.username) {
@@ -219,8 +223,11 @@ router.patch(
 			data: user,
 		} as UserUpdateEvent);
 
+		// * Discord client now uses "token: (token)" instead of newToken
+		// * sending both to avoid breaking existing client support
 		res.json({
 			...user,
+			token: newToken,
 			newToken,
 		});
 	},

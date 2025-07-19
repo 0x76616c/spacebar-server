@@ -19,6 +19,7 @@
 import { route } from "@spacebar/api";
 import {
 	checkToken,
+	Device,
 	Email,
 	FieldErrors,
 	generateToken,
@@ -71,12 +72,19 @@ router.post(
 				valid_tokens_since: new Date(),
 			},
 		};
+
 		await User.update({ id: user.id }, data);
 
 		// come on, the user has to have an email to reset their password in the first place
 		await Email.sendPasswordChanged(user, user.email!);
 
-		res.json({ token: await generateToken(user.id) });
+		if (req.device_id) {
+			const device = await Device.resetDevices({ req, user });
+
+			res.json({ token: await generateToken(device) });
+		} else {
+			res.json({ token: await generateToken(user.id) });
+		}
 	},
 );
 

@@ -19,6 +19,7 @@
 import { getIpAdress, route, verifyCaptcha } from "@spacebar/api";
 import {
 	Config,
+	Device,
 	FieldErrors,
 	LoginSchema,
 	User,
@@ -196,7 +197,9 @@ router.post(
 				});
 		}
 
-		const token = await generateToken(user.id);
+		const device = await Device.createDevice({ req, user });
+
+		const token = await generateToken(device);
 
 		// Notice this will have a different token structure, than discord
 		// Discord header is just the user id as string, which is not possible with npm-jsonwebtoken package

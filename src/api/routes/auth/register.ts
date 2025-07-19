@@ -25,6 +25,7 @@ import {
 } from "@spacebar/api";
 import {
 	Config,
+	Device,
 	FieldErrors,
 	Invite,
 	RegisterSchema,
@@ -318,7 +319,9 @@ router.post(
 			await Invite.joinGuild(user.id, body.invite);
 		}
 
-		return res.json({ token: await generateToken(user.id) });
+		const device = await Device.createDevice({ req, user });
+
+		return res.json({ token: await generateToken(device) });
 	},
 );
 

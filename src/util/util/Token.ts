@@ -18,7 +18,7 @@
 
 import jwt, { VerifyOptions } from "jsonwebtoken";
 import { Config } from "./Config";
-import { User } from "../entities";
+import { Device, User } from "../entities";
 // TODO: dont use deprecated APIs lol
 import {
 	FindOptionsRelationByString,
@@ -30,6 +30,7 @@ export const JWTOptions: VerifyOptions = { algorithms: ["HS256"] };
 export type UserTokenData = {
 	user: User;
 	decoded: { id: string; iat: number; email?: string };
+	device: string | null;
 };
 
 export const checkToken = (
@@ -50,6 +51,19 @@ export const checkToken = (
 			async (err, out) => {
 				const decoded = out as UserTokenData["decoded"];
 				if (err || !decoded) return reject("Invalid Token");
+
+				const device = await Device.findOne({
+					where: { id: decoded.id },
+					select: ["id", "suspended", "user_id", "id_hash"],
+				});
+
+				if (device) {
+					if (device.suspended) {
+						return reject("Device suspended");
+					}
+
+					decoded.id = device.user_id;
+				}
 
 				const user = await User.findOne({
 					where: decoded.email
@@ -78,7 +92,11 @@ export const checkToken = (
 				if (user.disabled) return reject("User disabled");
 				if (user.deleted) return reject("User not found");
 
-				return resolve({ decoded, user });
+				if (!device) {
+					return resolve({ decoded, user, device: null });
+				}
+
+				return resolve({ decoded, user, device: device.id_hash });
 			},
 		);
 	});
